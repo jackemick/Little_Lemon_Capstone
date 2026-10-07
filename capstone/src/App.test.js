@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders the Little Lemon homepage', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+
+  expect(screen.getByRole('heading', { name: /little lemon/i, level: 1 })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /reserve a table/i })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /specials/i })).toBeInTheDocument();
 });
