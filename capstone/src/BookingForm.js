@@ -1,24 +1,34 @@
-import React, { useState } from 'react';
-import CustomSelect from './CustomSelect';
+import React, { useState } from "react";
+import CustomSelect from "./CustomSelect";
 
-export default function BookingForm({ availableTimes, onSubmit, onDateChange }) {
+export default function BookingForm({
+  availableTimes,
+  onSubmit,
+  onDateChange,
+}) {
   const [formData, setFormData] = useState({
-    date: '',
-    time: '',
+    date: "",
+    time: "",
     guests: 1,
-    occasion: '',
-    name: '',
-    email: '',
+    occasion: "",
+    name: "",
+    email: "",
   });
-  const [dateError, setDateError] = useState('');
+  const [dateError, setDateError] = useState("");
 
-  const occasionOptions = ['Birthday', 'Anniversary', 'Date Night', 'Work Event', 'Other'];
+  const occasionOptions = [
+    "Birthday",
+    "Anniversary",
+    "Date Night",
+    "Work Event",
+    "Other",
+  ];
 
   const getTodayString = () => {
     const today = new Date();
     const offset = today.getTimezoneOffset();
     const localToday = new Date(today.getTime() - offset * 60 * 1000);
-    return localToday.toISOString().split('T')[0];
+    return localToday.toISOString().split("T")[0];
   };
 
   const isPastDate = (value) => {
@@ -33,16 +43,21 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
   const validateGuests = (value) => {
     const guestCount = Number(value);
 
-    if (value === '' || Number.isNaN(guestCount) || guestCount < 1 || guestCount > 10) {
+    if (
+      value === "" ||
+      Number.isNaN(guestCount) ||
+      guestCount < 1 ||
+      guestCount > 10
+    ) {
       return {
         valid: false,
-        message: 'Please enter between 1 and 10 guests.',
+        message: "Please enter between 1 and 10 guests.",
       };
     }
 
     return {
       valid: true,
-      message: 'Guest count is valid.',
+      message: "Guest count is valid.",
     };
   };
 
@@ -67,20 +82,20 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
     const nextDate = e.target.value;
 
     if (nextDate && isPastDate(nextDate)) {
-      setDateError('Please select today or a future date.');
+      setDateError("Please select today or a future date.");
       setFormData((prevData) => ({
         ...prevData,
-        date: '',
-        time: '',
+        date: "",
+        time: "",
       }));
       return;
     }
 
-    setDateError('');
+    setDateError("");
     setFormData((prevData) => ({
       ...prevData,
       date: nextDate,
-      time: '',
+      time: "",
     }));
 
     if (onDateChange && nextDate) {
@@ -92,7 +107,7 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
     e.preventDefault();
 
     if (!formData.date || isPastDate(formData.date)) {
-      setDateError('Please select today or a future date.');
+      setDateError("Please select today or a future date.");
       return;
     }
 
@@ -102,24 +117,47 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
         guests: Number(formData.guests),
       };
       setFormData({
-        date: '',
-        time: '',
+        date: "",
+        time: "",
         guests: 1,
-        occasion: '',
-        name: '',
-        email: '',
+        occasion: "",
+        name: "",
+        email: "",
       });
-      setDateError('');
+      setDateError("");
       onSubmit(formDataToSubmit);
     }
   };
+
+  const submitDisabled =
+    !formData.occasion ||
+    !formData.date ||
+    !formData.time ||
+    !formData.name ||
+    !formData.email ||
+    !validateGuests(formData.guests).valid;
+
+  const inputField = document.getElementById("name");
+  inputField && inputField.addEventListener("input", (event) => {
+    const start = event.target.selectionStart;
+    const end = event.target.selectionEnd;
+
+    const originalValue = event.target.value;
+    const cleanValue = originalValue.replace(/\d/g, "");
+
+    if (originalValue !== cleanValue) {
+      event.target.value = cleanValue;
+
+      event.target.setSelectionRange(start - 1, end - 1);
+    }
+  });
 
   return (
     <form className="booking-form" onSubmit={handleSubmit}>
       <CustomSelect
         items={occasionOptions}
-        selectedItem={formData.occasion || 'Select an occasion'}
-        onItemChange={(value) => handleSelectChange('occasion', value)}
+        selectedItem={formData.occasion || "Select an occasion"}
+        onItemChange={(value) => handleSelectChange("occasion", value)}
         itemType="occasion"
         icon="🎉"
       />
@@ -135,7 +173,10 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
         aria-invalid={!guestValidation.valid}
         required
       />
-      <div className={`guest-validation ${guestValidation.valid ? 'valid' : 'error'}`} aria-live="polite">
+      <div
+        className={`guest-validation ${guestValidation.valid ? "valid" : "error"}`}
+        aria-live="polite"
+      >
         {guestValidation.message}
       </div>
 
@@ -159,13 +200,17 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
       {formData.date && (
         <div className="time-picker">
           <span className="time-picker__label">Available times</span>
-          <div className="time-tag-list" role="listbox" aria-label="Available times">
+          <div
+            className="time-tag-list"
+            role="listbox"
+            aria-label="Available times"
+          >
             {availableTimes.map((time) => (
               <button
                 key={time}
                 type="button"
-                className={`time-tag ${formData.time === time ? 'selected' : ''}`}
-                onClick={() => handleSelectChange('time', time)}
+                className={`time-tag ${formData.time === time ? "selected" : ""}`}
+                onClick={() => handleSelectChange("time", time)}
                 aria-pressed={formData.time === time}
               >
                 {time}
@@ -180,7 +225,7 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
         type="text"
         id="name"
         name="name"
-        value={formData.name || ''}
+        value={formData.name || ""}
         onChange={handleChange}
         required
       />
@@ -190,12 +235,14 @@ export default function BookingForm({ availableTimes, onSubmit, onDateChange }) 
         type="email"
         id="email"
         name="email"
-        value={formData.email || ''}
+        value={formData.email || ""}
         onChange={handleChange}
         required
       />
 
-      <button type="submit">Make Your reservation</button>
+      <button disabled={submitDisabled} type="submit">
+        Make Your reservation
+      </button>
     </form>
   );
 }

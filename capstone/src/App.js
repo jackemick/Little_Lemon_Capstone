@@ -228,12 +228,12 @@ function App() {
   }
 
   const getDefaultTimes = () => [
-    "17:00",
-    "18:00",
-    "19:00",
-    "20:00",
-    "21:00",
-    "22:00",
+    "5:00 PM",
+    "6:00 PM",
+    "7:00 PM",
+    "8:00 PM",
+    "9:00 PM",
+    "10:00 PM",
   ];
 
   const normalizeDateString = (date) => {
@@ -248,13 +248,33 @@ function App() {
     return String(date).slice(0, 10);
   };
 
+  const formatTimeForDisplay = (value) => {
+    if (typeof value !== "string") {
+      return value;
+    }
+
+    const [hoursString, minutesString = "00"] = value.split(":");
+    const hours = Number(hoursString);
+    const minutes = Number(minutesString);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+      return value;
+    }
+
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const normalizedHours = hours % 12 === 0 ? 12 : hours % 12;
+    const normalizedMinutes = minutes === 0 ? "00" : String(minutes).padStart(2, "0");
+
+    return `${normalizedHours}:${normalizedMinutes} ${suffix}`;
+  };
+
   const getAvailableTimesForDate = (date) => {
     const normalizedDate = normalizeDateString(date);
     const apiDate = new Date(`${normalizedDate}T12:00:00`);
     const apiTimes = fetchAPI(apiDate);
 
     if (Array.isArray(apiTimes) && apiTimes.length > 0) {
-      return apiTimes;
+      return apiTimes.map((time) => formatTimeForDisplay(time));
     }
 
     return getDefaultTimes();

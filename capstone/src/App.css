@@ -566,6 +566,13 @@ body {
   box-shadow: 0 8px 18px rgba(244, 206, 20, 0.25);
 }
 
+.booking-form button[type='submit']:disabled {
+  background: rgba(244, 206, 20, 0.5);
+  color: rgba(51, 51, 51, 0.6);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .custom-select {
   width: 100%;
   max-width: 420px;
